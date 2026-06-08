@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { TiArrowSortedUp, TiArrowSortedDown } from "react-icons/ti";
 import Table from './Table';
+import useSort from '../hooks/use-sort';
 
 // "content on screen changes" -> state!
 function getIcons(label, sortBy, sortOrder) {
@@ -38,27 +39,10 @@ function getIcons(label, sortBy, sortOrder) {
 function SortableTable(props) {
 
     const {config, data} = props;
-    const [sortOrder, setSortOrder] = useState(null);
-    const [sortBy, setSortBy] = useState(null);
-
-    const handleClick = (label) => {
-        if(sortBy && label !== sortBy) {
-            setSortOrder('asc');
-            setSortBy(label);
-        }
-        else if(sortOrder === null){
-            setSortOrder('asc');
-            setSortBy(label);
-        }
-        else if(sortOrder === 'asc'){
-            setSortOrder('desc');
-            setSortBy(label);
-        }
-        else if (sortOrder === 'desc') {
-            setSortOrder(null)
-            setSortBy(null);
-        }
-    }
+    const { sortOrder, sortBy, sortedData, setSortColumn } = useSort(
+        data,
+        config
+    );
 
     const updatedConfig = config.map((col) => {
         if(!col.sortValue){
@@ -68,7 +52,7 @@ function SortableTable(props) {
             ...col,
             header: () => (
                 <th className="cursor-pointer hover:bg-gray-100 p-3" 
-                    onClick={() => handleClick(col.label)}>
+                    onClick={() => setSortColumn(col.label)}>
                     <div className="flex items-center">
                         {getIcons(col.label, sortBy, sortOrder)}
                         {col.label}
