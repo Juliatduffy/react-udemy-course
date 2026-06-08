@@ -1,7 +1,7 @@
 import Dropdown from "../components/Dropdown";
 import {useState} from 'react';
 
-function App(){
+function DropdownPage(){
 
   const[selection, setSelection] = useState(null);
   
@@ -18,4 +18,4 @@ function App(){
   return <Dropdown selection={selection} onSelect={handleSelect} options = {options}/>
 }
 
-export default App;
+export default DropdownPage;
