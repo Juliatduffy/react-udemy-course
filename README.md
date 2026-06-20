@@ -59,6 +59,16 @@ A mini component library with `Button`, `Accordion`, `Dropdown`, `Panel`, each
 with its own demo page. Emphasizes designing components that accept many props
 and reusing them consistently across pages.
 
+The `Counter` component also demonstrates the `useReducer` hook. Instead of
+juggling several `useState` calls, all of the counter's state (`count` and
+`valueToAdd`) lives in one object, and every update goes through a single
+`reducer` function. Components dispatch plain action objects (like
+`{ type: INCREMENT_COUNT }`), and the reducer's `switch` statement decides how
+state changes for each action type. The reducer is wrapped with `produce` from
+**Immer**, which lets you write what looks like mutating code
+(`state.count = state.count - 1`) while Immer safely produces a new immutable
+state behind the scenes.
+
 ### 6. Books 
 
 **Concepts:** CRUD app with the Context API, custom hooks,
@@ -74,6 +84,27 @@ books without passing props down through every level.
 > npx json-server --watch db.json --port 3001
 > ```
 
+### 7. Cars
+
+**Concepts:** global state management with **Redux Toolkit**, `configureStore`,
+`createSlice`, `useSelector` and `useDispatch`, the `<Provider>` component,
+derived state.
+
+A car-tracking app where you add cars (name + cost), search/filter them, and see
+a running total cost. Instead of the Context API, state is managed by a central
+Redux **store** (`store/index.js`) built from two **slices**: a `carsSlice` (the
+list of cars and the search term) and a `formSlice` (the add-car form inputs).
+Each slice (`createSlice`) bundles its starting state together with the reducer
+functions that change it, and automatically generates **action creators** like
+`addCar` and `removeCar` — and like Comps' counter, slices use Immer under the
+hood, so the reducers can "mutate" state directly (`state.data.push(...)`).
+
+Components connect to the store with two hooks from `react-redux`: `useSelector`
+reads a slice of state (e.g. `CarValue` selects all cars, filters by the search
+term, and `reduce`s them into a total cost — a value *derived* from state rather
+than stored), while `useDispatch` sends actions to update it. The whole app is
+wrapped in `<Provider store={store}>` so every component can reach the store.
+
 ---
 
 ## Concept summary
@@ -84,5 +115,6 @@ books without passing props down through every level.
 | Props         | Props, reusable components                      |
 | Animals       | `useState`, events, lists & keys                |
 | ImageSearch   | API fetching, async, child→parent callbacks     |
-| Comps         | Configurable components, prop-types, Tailwind   |
+| Comps         | Configurable components, prop-types, Tailwind, `useReducer` + Immer |
 | Books         | Context API, custom hooks, full CRUD, json-server |
+| Cars          | Redux Toolkit, slices, `useSelector`/`useDispatch`, derived state |
