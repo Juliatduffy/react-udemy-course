@@ -46,6 +46,11 @@ const albumsApi = createApi({
           };
         },
       }),
+      // we have Album, albumID and UsersAlbums, userID so we can invalidate the correct cache entries
+      // when we remove an album we invalidate the Album with the specific id so any queries
+      // that are fetching that album will know to refetch. When we add an album we invalidate
+      // the UsersAlbums for the specific user so that the list of albums for that user will
+      // refetch and include the newly added album. This ensures our cache stays consistent.
       fetchAlbums: builder.query({
         providesTags: (result, error, user) => {
           const tags = result.map((album) => {
