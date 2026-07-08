@@ -105,6 +105,45 @@ term, and `reduce`s them into a total cost — a value *derived* from state rath
 than stored), while `useDispatch` sends actions to update it. The whole app is
 wrapped in `<Provider store={store}>` so every component can reach the store.
 
+### 8. Maps
+
+**Concepts:** **TypeScript** with React (typing props, state, and refs),
+integrating a third-party library (**react-leaflet**), `useRef` + `useEffect`
+to imperatively control that library, lifting state up, `fetch` against a
+public API.
+
+A location search app. You type a place name, and `LocationSearch` calls the
+free **OpenStreetMap / Nominatim** API (`api/search.ts`) to turn the term into a
+list of `Place` objects (each with a `latitude` and `longitude`). Clicking "Go"
+lifts the chosen place up to `App`, which passes it down to the `Map` component.
+
+Because the interface is typed, props like `onPlaceClick: (place: Place) => void`
+and state like `useState<Place[]>([])` declare exactly what shape the data has.
+The `Map` component wraps Leaflet: it holds a `useRef<LeafletMap | null>(null)`
+to the underlying map instance, and a `useEffect` watching `place` calls
+`mapRef.current.flyTo(...)` to imperatively pan the map whenever a new place is
+selected — a common pattern for controlling non-React libraries from React.
+
+### 9. Registry
+
+**Concepts:** client-side routing with **React Router** (`react-router-dom`),
+`createBrowserRouter`, nested routes with a shared layout (`<Outlet />`), route
+**loaders** for fetching data *before* a page renders, `useLoaderData`, URL
+params, and a typed API layer.
+
+A mini npm-registry browser: a home page of featured packages, a search page,
+and a details page for a single package. Routing is defined once in `App.tsx`
+with `createBrowserRouter`. A `Root` component renders the shared `Header` plus
+an `<Outlet />`, where React Router swaps in the matched child page.
+
+The key idea is **loaders**. Instead of a page fetching its own data inside a
+`useEffect`, each route points at a loader function (e.g. `homeLoader`) that runs
+*before* the component renders and returns the data it needs. The page then reads
+that data synchronously with `useLoaderData`. Dynamic routes like
+`/packages/:name` capture a URL param the loader uses to fetch one package, and
+the whole `api/` folder is split into typed `queries` and `types` so every
+response has a known shape.
+
 ---
 
 ## Concept summary
@@ -118,3 +157,5 @@ wrapped in `<Provider store={store}>` so every component can reach the store.
 | Comps         | Configurable components, prop-types, Tailwind, `useReducer` + Immer |
 | Books         | Context API, custom hooks, full CRUD, json-server |
 | Cars          | Redux Toolkit, slices, `useSelector`/`useDispatch`, derived state |
+| Maps          | TypeScript, third-party libs (react-leaflet), `useRef`/`useEffect`, lifting state |
+| Registry      | React Router, `createBrowserRouter`, nested routes, loaders, URL params |

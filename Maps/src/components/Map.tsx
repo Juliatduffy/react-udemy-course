@@ -9,6 +9,8 @@ interface MapProps {
 }
 
 export default function Map({ place }: MapProps) {
+  // when we want to use a default value of null with useEffect or useRef we
+  // must specify the type so TypeScript doesn't tweak out
   const mapRef = useRef<LeafletMap | null>(null);
 
   useEffect(() => {
